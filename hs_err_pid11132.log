@@ -16,7 +16,7 @@
 
 ---------------  S U M M A R Y ------------
 
-Command Line: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51680:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_161216.jfr -Dfile.encoding=UTF-8 com.project.database.Mysql
+Command Line: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51680:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_161216.jfr -Dfile.encoding=UTF-8 com.project.database.DBMysql
 
 Host: MacBookAir10,1 x86_64 2400 MHz, 8 cores, 8G, Darwin 21.1.0
 Time: Wed Jun 22 16:12:17 2022 KST elapsed time: 0.775214 seconds (0d 0h 0m 0s)
@@ -47,11 +47,11 @@ j  java.lang.invoke.MethodHandleNatives.linkCallSite(Ljava/lang/Object;ILjava/la
 v  ~StubRoutines::call_stub
 j  java.sql.DriverManager.registerDriver(Ljava/sql/Driver;Ljava/sql/DriverAction;)V+32 java.sql@11.0.14.1
 j  java.sql.DriverManager.registerDriver(Ljava/sql/Driver;)V+2 java.sql@11.0.14.1
-j  com.mysql.cj.jdbc.Driver.<clinit>()V+7
+j  com.DBMysql.cj.jdbc.Driver.<clinit>()V+7
 v  ~StubRoutines::call_stub
 j  java.lang.Class.forName0(Ljava/lang/String;ZLjava/lang/ClassLoader;Ljava/lang/Class;)Ljava/lang/Class;+0 java.base@11.0.14.1
 j  java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;+11 java.base@11.0.14.1
-j  com.project.database.Mysql.main([Ljava/lang/String;)V+28
+j  com.project.database.DBMysql.main([Ljava/lang/String;)V+28
 v  ~StubRoutines::call_stub
 
 siginfo: si_signo: 10 (SIGBUS), si_code: 2 (BUS_ADRERR), si_addr: 0x000000030d614200
@@ -189,7 +189,7 @@ Java Threads: ( => current thread )
   0x00007f8405812000 JavaThread "Common-Cleaner" daemon [_thread_blocked, id=39683, stack(0x000000030e44e000,0x000000030e54e000)]
   0x00007f83e50a1000 JavaThread "Monitor Ctrl-Break" daemon [_thread_in_native, id=38915, stack(0x000000030e551000,0x000000030e651000)]
   0x00007f8407392800 JavaThread "Async-profiler Timer" daemon [_thread_in_native, id=38439, stack(0x000000030e654000,0x000000030e6d4000)]
-  0x00007f84058f1800 JavaThread "mysql-cj-abandoned-connection-cleanup" daemon [_thread_blocked, id=28931, stack(0x000000030e85d000,0x000000030e95d000)]
+  0x00007f84058f1800 JavaThread "DBMysql-cj-abandoned-connection-cleanup" daemon [_thread_blocked, id=28931, stack(0x000000030e85d000,0x000000030e95d000)]
 
 Other Threads:
   0x00007f8405028800 VMThread "VM Thread" [stack: 0x000000030db28000,0x000000030dc28000] [id=17923]
@@ -711,8 +711,8 @@ Dynamic libraries:
 
 VM Arguments:
 jvm_args: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51680:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_161216.jfr -Dfile.encoding=UTF-8 
-java_command: com.project.database.Mysql
-java_class_path (initial): /Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/out/production/Java_Application_Board_v2.1:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/json-simple-1.1.1.jar:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/mysql-connector-java-8.0.29.jar
+java_command: com.project.database.DBMysql
+java_class_path (initial): /Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/out/production/Java_Application_Board_v2.1:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/json-simple-1.1.1.jar:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/DBMysql-connector-java-8.0.29.jar
 Launcher Type: SUN_STANDARD
 
 [Global flags]

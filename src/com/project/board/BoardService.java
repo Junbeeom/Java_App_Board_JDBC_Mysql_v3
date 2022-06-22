@@ -1,5 +1,6 @@
 package com.project.board;
 
+import com.project.database.DBMysql;
 import com.project.file.JsonFile;
 import org.json.simple.JSONObject;
 
@@ -15,20 +16,11 @@ public class BoardService {
 
     //등록
     public void registered(String userTitle, String userContent, String userName) {
-        String createdts = ts();
 
-        HashMap<String, String> registeredHm = new HashMap<String, String>();
-        registeredHm.put("title", userTitle);
-        registeredHm.put("content", userContent);
-        registeredHm.put("name", userName);
-        registeredHm.put("createdTs", createdts);
-        registeredHm.put("updatedTs", "-");
-        registeredHm.put("deletedTs", "-");
+        DBMysql dbMysql = new DBMysql();
+        dbMysql.dbCreated(userTitle, userContent, userName);
 
-        jsonObject.put((jsonObject.size() + 1), registeredHm);
-        jsonFile.jsonWriter(jsonObject.toJSONString());
-
-        System.out.println("\n" + userName + "님의 게시글 등록이 완료 되었습니다.\n게시글 고유번호는 " + jsonObject.size() + "입니다.");
+        System.out.println("\n" + userName + "님의 게시글 등록이 완료 되었습니다.\n게시글 고유번호는 " +  dbMysql.getNo()+ "입니다.");
     }
 
     //조회

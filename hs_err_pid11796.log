@@ -16,7 +16,7 @@
 
 ---------------  S U M M A R Y ------------
 
-Command Line: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51979:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_172840.jfr -Dfile.encoding=UTF-8 com.project.database.Mysql
+Command Line: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51979:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_172840.jfr -Dfile.encoding=UTF-8 com.project.database.DBMysql
 
 Host: MacBookAir10,1 x86_64 2400 MHz, 8 cores, 8G, Darwin 21.1.0
 Time: Wed Jun 22 17:28:44 2022 KST elapsed time: 2.880140 seconds (0d 0h 0m 2s)
@@ -43,21 +43,21 @@ j  sun.security.ssl.ClientHandshakeContext.kickstart()V+9 java.base@11.0.14.1
 j  sun.security.ssl.TransportContext.kickstart()V+183 java.base@11.0.14.1
 j  sun.security.ssl.SSLSocketImpl.startHandshake(Z)V+108 java.base@11.0.14.1
 j  sun.security.ssl.SSLSocketImpl.startHandshake()V+2 java.base@11.0.14.1
-j  com.mysql.cj.protocol.ExportControlled.performTlsHandshake(Ljava/net/Socket;Lcom/mysql/cj/protocol/SocketConnection;Lcom/mysql/cj/ServerVersion;Lcom/mysql/cj/log/Log;)Ljava/net/Socket;+235
-j  com.mysql.cj.protocol.StandardSocketFactory.performTlsHandshake(Lcom/mysql/cj/protocol/SocketConnection;Lcom/mysql/cj/protocol/ServerSession;Lcom/mysql/cj/log/Log;)Ljava/io/Closeable;+21
-j  com.mysql.cj.protocol.a.NativeSocketConnection.performTlsHandshake(Lcom/mysql/cj/protocol/ServerSession;Lcom/mysql/cj/log/Log;)V+8
-j  com.mysql.cj.protocol.a.NativeProtocol.negotiateSSLConnection()V+116
-j  com.mysql.cj.protocol.a.NativeAuthenticationProvider.connect(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V+765
-j  com.mysql.cj.protocol.a.NativeProtocol.connect(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V+11
-j  com.mysql.cj.NativeSession.connect(Lcom/mysql/cj/conf/HostInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILcom/mysql/cj/TransactionEventHandler;)V+110
-j  com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(Z)V+32
-j  com.mysql.cj.jdbc.ConnectionImpl.createNewIO(Z)V+27
-j  com.mysql.cj.jdbc.ConnectionImpl.<init>(Lcom/mysql/cj/conf/HostInfo;)V+753
-j  com.mysql.cj.jdbc.ConnectionImpl.getInstance(Lcom/mysql/cj/conf/HostInfo;)Lcom/mysql/cj/jdbc/JdbcConnection;+5
-j  com.mysql.cj.jdbc.NonRegisteringDriver.connect(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;+72
+j  com.DBMysql.cj.protocol.ExportControlled.performTlsHandshake(Ljava/net/Socket;Lcom/DBMysql/cj/protocol/SocketConnection;Lcom/DBMysql/cj/ServerVersion;Lcom/DBMysql/cj/log/Log;)Ljava/net/Socket;+235
+j  com.DBMysql.cj.protocol.StandardSocketFactory.performTlsHandshake(Lcom/DBMysql/cj/protocol/SocketConnection;Lcom/DBMysql/cj/protocol/ServerSession;Lcom/DBMysql/cj/log/Log;)Ljava/io/Closeable;+21
+j  com.DBMysql.cj.protocol.a.NativeSocketConnection.performTlsHandshake(Lcom/DBMysql/cj/protocol/ServerSession;Lcom/DBMysql/cj/log/Log;)V+8
+j  com.DBMysql.cj.protocol.a.NativeProtocol.negotiateSSLConnection()V+116
+j  com.DBMysql.cj.protocol.a.NativeAuthenticationProvider.connect(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V+765
+j  com.DBMysql.cj.protocol.a.NativeProtocol.connect(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V+11
+j  com.DBMysql.cj.NativeSession.connect(Lcom/DBMysql/cj/conf/HostInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILcom/DBMysql/cj/TransactionEventHandler;)V+110
+j  com.DBMysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(Z)V+32
+j  com.DBMysql.cj.jdbc.ConnectionImpl.createNewIO(Z)V+27
+j  com.DBMysql.cj.jdbc.ConnectionImpl.<init>(Lcom/DBMysql/cj/conf/HostInfo;)V+753
+j  com.DBMysql.cj.jdbc.ConnectionImpl.getInstance(Lcom/DBMysql/cj/conf/HostInfo;)Lcom/DBMysql/cj/jdbc/JdbcConnection;+5
+j  com.DBMysql.cj.jdbc.NonRegisteringDriver.connect(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;+72
 j  java.sql.DriverManager.getConnection(Ljava/lang/String;Ljava/util/Properties;Ljava/lang/Class;)Ljava/sql/Connection;+130 java.sql@11.0.14.1
 j  java.sql.DriverManager.getConnection(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;+37 java.sql@11.0.14.1
-j  com.project.database.Mysql.main([Ljava/lang/String;)V+35
+j  com.project.database.DBMysql.main([Ljava/lang/String;)V+35
 v  ~StubRoutines::call_stub
 
 siginfo: si_signo: 10 (SIGBUS), si_code: 2 (BUS_ADRERR), si_addr: 0x000000030ccc3f00
@@ -196,7 +196,7 @@ Java Threads: ( => current thread )
   0x00007f8e52168000 JavaThread "Monitor Ctrl-Break" daemon [_thread_in_native, id=38147, stack(0x000000030dc89000,0x000000030dd89000)]
   0x00007f8e3220e000 JavaThread "Async-profiler Timer" daemon [_thread_in_native, id=36927, stack(0x000000030dd8c000,0x000000030de0c000)]
   0x00007f8e3220e800 JavaThread "Attach Listener" daemon [_thread_blocked, id=35587, stack(0x000000030df95000,0x000000030e095000)]
-  0x00007f8e52a2b800 JavaThread "mysql-cj-abandoned-connection-cleanup" daemon [_thread_blocked, id=29187, stack(0x000000030e098000,0x000000030e198000)]
+  0x00007f8e52a2b800 JavaThread "DBMysql-cj-abandoned-connection-cleanup" daemon [_thread_blocked, id=29187, stack(0x000000030e098000,0x000000030e198000)]
 
 Other Threads:
   0x00007f8e5209b000 VMThread "VM Thread" [stack: 0x000000030d1d8000,0x000000030d2d8000] [id=16387]
@@ -743,8 +743,8 @@ Dynamic libraries:
 
 VM Arguments:
 jvm_args: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51979:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_172840.jfr -Dfile.encoding=UTF-8 
-java_command: com.project.database.Mysql
-java_class_path (initial): /Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/out/production/Java_Application_Board_v2.1:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/json-simple-1.1.1.jar:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/mysql-connector-java-8.0.29.jar
+java_command: com.project.database.DBMysql
+java_class_path (initial): /Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/out/production/Java_Application_Board_v2.1:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/json-simple-1.1.1.jar:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/DBMysql-connector-java-8.0.29.jar
 Launcher Type: SUN_STANDARD
 
 [Global flags]

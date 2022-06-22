@@ -16,7 +16,7 @@
 
 ---------------  S U M M A R Y ------------
 
-Command Line: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51692:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_161311.jfr -Dfile.encoding=UTF-8 com.project.database.Mysql
+Command Line: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51692:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_161311.jfr -Dfile.encoding=UTF-8 com.project.database.DBMysql
 
 Host: MacBookAir10,1 x86_64 2400 MHz, 8 cores, 8G, Darwin 21.1.0
 Time: Wed Jun 22 16:13:12 2022 KST elapsed time: 1.330046 seconds (0d 0h 0m 1s)
@@ -45,15 +45,15 @@ J 611 c1 jdk.internal.loader.BuiltinClassLoader.loadClass(Ljava/lang/String;Z)Lj
 j  jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(Ljava/lang/String;Z)Ljava/lang/Class;+36 java.base@11.0.14.1
 J 610 c1 java.lang.ClassLoader.loadClass(Ljava/lang/String;)Ljava/lang/Class; java.base@11.0.14.1 (7 bytes) @ 0x0000000114ac24c4 [0x0000000114ac23c0+0x0000000000000104]
 v  ~StubRoutines::call_stub
-j  com.mysql.cj.NativeSession.connect(Lcom/mysql/cj/conf/HostInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILcom/mysql/cj/TransactionEventHandler;)V+75
-j  com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(Z)V+32
-j  com.mysql.cj.jdbc.ConnectionImpl.createNewIO(Z)V+27
-j  com.mysql.cj.jdbc.ConnectionImpl.<init>(Lcom/mysql/cj/conf/HostInfo;)V+753
-j  com.mysql.cj.jdbc.ConnectionImpl.getInstance(Lcom/mysql/cj/conf/HostInfo;)Lcom/mysql/cj/jdbc/JdbcConnection;+5
-j  com.mysql.cj.jdbc.NonRegisteringDriver.connect(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;+72
+j  com.DBMysql.cj.NativeSession.connect(Lcom/DBMysql/cj/conf/HostInfo;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILcom/DBMysql/cj/TransactionEventHandler;)V+75
+j  com.DBMysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(Z)V+32
+j  com.DBMysql.cj.jdbc.ConnectionImpl.createNewIO(Z)V+27
+j  com.DBMysql.cj.jdbc.ConnectionImpl.<init>(Lcom/DBMysql/cj/conf/HostInfo;)V+753
+j  com.DBMysql.cj.jdbc.ConnectionImpl.getInstance(Lcom/DBMysql/cj/conf/HostInfo;)Lcom/DBMysql/cj/jdbc/JdbcConnection;+5
+j  com.DBMysql.cj.jdbc.NonRegisteringDriver.connect(Ljava/lang/String;Ljava/util/Properties;)Ljava/sql/Connection;+72
 j  java.sql.DriverManager.getConnection(Ljava/lang/String;Ljava/util/Properties;Ljava/lang/Class;)Ljava/sql/Connection;+130 java.sql@11.0.14.1
 j  java.sql.DriverManager.getConnection(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/sql/Connection;+37 java.sql@11.0.14.1
-j  com.project.database.Mysql.main([Ljava/lang/String;)V+35
+j  com.project.database.DBMysql.main([Ljava/lang/String;)V+35
 v  ~StubRoutines::call_stub
 
 siginfo: si_signo: 10 (SIGBUS), si_code: 2 (BUS_ADRERR), si_addr: 0x000000030510e200
@@ -194,7 +194,7 @@ Java Threads: ( => current thread )
   0x00007f92000a1800 JavaThread "Common-Cleaner" daemon [_thread_blocked, id=39427, stack(0x0000000305f4a000,0x000000030604a000)]
   0x00007f91f015d800 JavaThread "Monitor Ctrl-Break" daemon [_thread_in_native, id=26883, stack(0x000000030604d000,0x000000030614d000)]
   0x00007f92090db800 JavaThread "Async-profiler Timer" daemon [_thread_in_native, id=27439, stack(0x0000000306150000,0x00000003061d0000)]
-  0x00007f91f0160000 JavaThread "mysql-cj-abandoned-connection-cleanup" daemon [_thread_blocked, id=36875, stack(0x0000000306359000,0x0000000306459000)]
+  0x00007f91f0160000 JavaThread "DBMysql-cj-abandoned-connection-cleanup" daemon [_thread_blocked, id=36875, stack(0x0000000306359000,0x0000000306459000)]
   0x00007f91d0859000 JavaThread "Attach Listener" daemon [_thread_blocked, id=30211, stack(0x000000030645c000,0x000000030655c000)]
 
 Other Threads:
@@ -449,26 +449,26 @@ Event: 0.528 Thread 0x00007f91f0009000 Exception <a 'java/lang/NoSuchMethodError
 Event: 1.069 Thread 0x00007f91f0009000 Exception <a 'java/lang/NoSuchMethodError'{0x0000000787a5a3d8}: 'java.lang.Object java.lang.invoke.DirectMethodHandle$Holder.invokeVirtual(java.lang.Object, java.lang.Object, java.lang.Object)'> (0x0000000787a5a3d8) thrown at [src/hotspot/share/interpreter/linkResolver.cpp, line 773]
 
 Events (20 events):
-Event: 1.321 loading class com/mysql/cj/protocol/Protocol$ProtocolEventHandler
-Event: 1.321 loading class com/mysql/cj/protocol/Protocol$ProtocolEventHandler done
-Event: 1.322 loading class com/mysql/cj/protocol/PacketReceivedTimeHolder
-Event: 1.322 loading class com/mysql/cj/protocol/PacketReceivedTimeHolder done
-Event: 1.322 loading class com/mysql/cj/protocol/ServerSession
-Event: 1.322 loading class com/mysql/cj/protocol/ServerSession done
-Event: 1.323 loading class com/mysql/cj/jdbc/exceptions/MysqlDataTruncation
-Event: 1.323 loading class com/mysql/cj/jdbc/exceptions/MysqlDataTruncation done
-Event: 1.324 loading class com/mysql/cj/protocol/ServerSessionStateController$ServerSessionStateChanges
-Event: 1.324 loading class com/mysql/cj/protocol/ServerSessionStateController$ServerSessionStateChanges done
-Event: 1.325 loading class com/mysql/cj/protocol/MessageHeader
-Event: 1.325 loading class com/mysql/cj/protocol/MessageHeader done
+Event: 1.321 loading class com/DBMysql/cj/protocol/Protocol$ProtocolEventHandler
+Event: 1.321 loading class com/DBMysql/cj/protocol/Protocol$ProtocolEventHandler done
+Event: 1.322 loading class com/DBMysql/cj/protocol/PacketReceivedTimeHolder
+Event: 1.322 loading class com/DBMysql/cj/protocol/PacketReceivedTimeHolder done
+Event: 1.322 loading class com/DBMysql/cj/protocol/ServerSession
+Event: 1.322 loading class com/DBMysql/cj/protocol/ServerSession done
+Event: 1.323 loading class com/DBMysql/cj/jdbc/exceptions/MysqlDataTruncation
+Event: 1.323 loading class com/DBMysql/cj/jdbc/exceptions/MysqlDataTruncation done
+Event: 1.324 loading class com/DBMysql/cj/protocol/ServerSessionStateController$ServerSessionStateChanges
+Event: 1.324 loading class com/DBMysql/cj/protocol/ServerSessionStateController$ServerSessionStateChanges done
+Event: 1.325 loading class com/DBMysql/cj/protocol/MessageHeader
+Event: 1.325 loading class com/DBMysql/cj/protocol/MessageHeader done
 Event: 1.325 loading class java/net/MalformedURLException
 Event: 1.325 loading class java/net/MalformedURLException done
 Event: 1.325 loading class java/nio/file/InvalidPathException
 Event: 1.325 loading class java/nio/file/InvalidPathException done
 Event: 1.325 loading class java/net/URISyntaxException
 Event: 1.325 loading class java/net/URISyntaxException done
-Event: 1.326 loading class com/mysql/cj/protocol/MessageSender
-Event: 1.326 loading class com/mysql/cj/protocol/MessageSender done
+Event: 1.326 loading class com/DBMysql/cj/protocol/MessageSender
+Event: 1.326 loading class com/DBMysql/cj/protocol/MessageSender done
 
 
 Dynamic libraries:
@@ -736,8 +736,8 @@ Dynamic libraries:
 
 VM Arguments:
 jvm_args: -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=51692:/Applications/IntelliJ IDEA.app/Contents/bin -agentpath:/private/var/folders/k6/dkc35rrd3kvf4z8xbpc5z4zh0000gn/T/libasyncProfiler.so=start,jfr,event=cpu,interval=1ms,event=alloc,file=/Users/jojunbeom/Mysql_2022_06_22_161311.jfr -Dfile.encoding=UTF-8 
-java_command: com.project.database.Mysql
-java_class_path (initial): /Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/out/production/Java_Application_Board_v2.1:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/json-simple-1.1.1.jar:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/mysql-connector-java-8.0.29.jar
+java_command: com.project.database.DBMysql
+java_class_path (initial): /Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/out/production/Java_Application_Board_v2.1:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/json-simple-1.1.1.jar:/Users/jojunbeom/Downloads/study/Java_App_Board_JDBC_Mysql_v3/resource/lib/DBMysql-connector-java-8.0.29.jar
 Launcher Type: SUN_STANDARD
 
 [Global flags]
