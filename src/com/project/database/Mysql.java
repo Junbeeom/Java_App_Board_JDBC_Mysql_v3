@@ -1,9 +1,10 @@
 package com.project.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import com.project.board.Board;
+
+import java.io.StringReader;
+import java.sql.*;
+import java.util.LinkedHashMap;
 
 public class Mysql {
     public static void main(String[] args) {
@@ -20,6 +21,7 @@ public class Mysql {
             Class.forName("com.mysql.cj.jdbc.Driver"); //드라이버 로딩
             conn = DriverManager.getConnection(url, user, password); //접속 (정보가 정확하면 넘어옴)
             stmt = conn.createStatement(); //실행 객체 생성
+
 
             if (conn != null){System.out.println("성공");}
             else{System.out.println("실패");}
@@ -44,6 +46,5 @@ public class Mysql {
                 e2.printStackTrace();
             }
         }
-
     }
 }
