@@ -25,7 +25,8 @@ public class BoardService {
 
     //조회
     public void listed() {
-        LinkedHashMap<Integer, Board> listedHashMap = jsonFile.jsonReader();
+        DBMysql dbMysql = new DBMysql();
+        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
 
         Scanner sc = new Scanner(System.in);
         int limit = 3;
@@ -337,7 +338,9 @@ public class BoardService {
 
     //게시글 내용 출력
     public void listPrint(int key) {
-        LinkedHashMap<Integer, Board> listedHashMap = jsonFile.jsonReader();
+        DBMysql dbMysql = new DBMysql();
+        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
+
         System.out.println("고유번호 : " + key);
         System.out.println("작 성 자 : " + listedHashMap.get(key).getName());
         System.out.println("제    목 : " + listedHashMap.get(key).getTitle());

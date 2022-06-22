@@ -1,7 +1,9 @@
 package com.project.database;
 
+import com.project.board.Board;
 import java.io.StringReader;
 import java.sql.*;
+import java.util.LinkedHashMap;
 
 public class DBMysql {
     public DBMysql() {}
@@ -11,15 +13,16 @@ public class DBMysql {
     private String user = "root";
     private String password = "26905031";
     private Connection conn = null;         //접속
-    private PreparedStatement ps = null;    //쿼리문 실행
-    private ResultSet rs = null;            //select문 결과
+    private PreparedStatement ps = null;   //쿼리문 실행
+    private ResultSet rs = null;          //select문 결과
+
 
     public int getNo() {
         return no;
     }
 
     public void dbCreated(String title, String content, String name) {
-        System.out.println("dbCreated 접속 : ");
+        System.out.println("dbCreated실행, boardtable 접속 : ");
 
         try { //예외처리 필수
             Class.forName("com.mysql.cj.jdbc.Driver"); //드라이버 로딩
@@ -57,7 +60,45 @@ public class DBMysql {
                 e2.printStackTrace();
             }
         }
-
     }
 
+    //조회 메소드
+    public LinkedHashMap<Integer, Board> dblisted() {
+        LinkedHashMap linkedHashMap = new LinkedHashMap();
+
+        try { //예외처리 필수
+            Class.forName("com.mysql.cj.jdbc.Driver");                //드라이버 로딩
+            conn = DriverManager.getConnection(url, user, password); //접속 (정보가 정확하면 넘어옴)
+        } catch (Exception e) {                                     //예외처리
+            e.printStackTrace();
+        }
+
+        String sql = "SELECT * FROM boardtable ";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            try (ResultSet resultSet = ps.executeQuery()) {
+
+                //테이블의 모든 건을 가져와야 한다.
+                while (resultSet.next()) {
+
+                    int id = resultSet.getInt("no");
+                    String title = resultSet.getString("title");
+                    String content = resultSet.getString("content");
+                    String name = resultSet.getString("name");
+                    String createdTs = resultSet.getString("created_ts");
+                    String updatedTs = resultSet.getString("updated_ts");
+                    String deletedTs = resultSet.getString("deleted_ts");
+
+                    linkedHashMap.put(id, new Board(title, content, name, createdTs, updatedTs, deletedTs));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return linkedHashMap;
+    }
 }
