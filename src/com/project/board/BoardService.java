@@ -4,7 +4,7 @@ import com.project.database.DBMysql;
 import com.project.file.JsonFile;
 import org.json.simple.JSONObject;
 
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.*;
 
 
@@ -20,7 +20,7 @@ public class BoardService {
         DBMysql dbMysql = new DBMysql();
         dbMysql.dbCreated(userTitle, userContent, userName);
 
-        System.out.println("\n" + userName + "님의 게시글 등록이 완료 되었습니다.\n게시글 고유번호는 " +  dbMysql.getNo()+ "입니다.");
+        System.out.println("\n" + userName + "님의 게시글 등록이 완료 되었습니다.\n게시글 고유번호는 " +  dbMysql.getUpdateNo()+ "입니다.");
     }
 
     //조회
@@ -171,14 +171,14 @@ public class BoardService {
 
                     newName = nameCheck(sc, newName);
 
-                    String updateTs = ts();
+                    //String updateTs = ts();
 
                     HashMap<String, String> hmName = new HashMap<String, String>();
                     hmName.put("title", listedHashMap.get(number).getTitle());
                     hmName.put("content", listedHashMap.get(number).getContent());
                     hmName.put("name",  newName);
                     hmName.put("createdTs", listedHashMap.get(number).getCreatedTs());
-                    hmName.put("updatedTs", updateTs);
+                    //hmName.put("updatedTs", updateTs);
                     hmName.put("deletedTs", "-");
 
                     jsonObject.put(number, hmName);
@@ -186,7 +186,7 @@ public class BoardService {
                     jsonFile.jsonWriter(jsonObject.toJSONString());
                     listedHashMap = jsonFile.jsonReader();
 
-                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + updateTs);
+                    //System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + updateTs);
                     break;
 
                 //제목 수정
@@ -198,14 +198,14 @@ public class BoardService {
                     newTitle = titleCheck(sc, newTitle);
                     listedHashMap.get(number).setTitle(newTitle);
 
-                    updateTs = ts();
+                    //updateTs = ts();
 
                     HashMap<String, String> hmTitle = new HashMap<String, String>();
                     hmTitle.put("title", newTitle);
                     hmTitle.put("content", listedHashMap.get(number).getContent());
                     hmTitle.put("name",  listedHashMap.get(number).getName());
                     hmTitle.put("createdTs", listedHashMap.get(number).getCreatedTs());
-                    hmTitle.put("updatedTs", updateTs);
+                   // hmTitle.put("updatedTs", updateTs);
                     hmTitle.put("deletedTs", "-");
 
                     jsonObject.put(number, hmTitle);
@@ -213,7 +213,7 @@ public class BoardService {
                     jsonFile.jsonWriter(jsonObject.toJSONString());
                     listedHashMap = jsonFile.jsonReader();
 
-                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + updateTs);
+                    //System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + updateTs);
                     break;
 
                 //내용 수정
@@ -224,14 +224,14 @@ public class BoardService {
 
                     newContent = contentCheck(sc, newContent);
 
-                    updateTs = ts();
+                   // updateTs = ts();
 
                     HashMap<String, String> hmContent = new HashMap<String, String>();
                     hmContent.put("title", listedHashMap.get(number).getName());
                     hmContent.put("content", newContent);
                     hmContent.put("name",  listedHashMap.get(number).getName());
                     hmContent.put("createdTs", listedHashMap.get(number).getCreatedTs());
-                    hmContent.put("updatedTs", updateTs);
+                    ///hmContent.put("updatedTs", updateTs);
                     hmContent.put("deletedTs", "-");
 
                     jsonObject.put(number, hmContent);
@@ -239,7 +239,7 @@ public class BoardService {
                     jsonFile.jsonWriter(jsonObject.toJSONString());
                     listedHashMap = jsonFile.jsonReader();
 
-                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + updateTs);
+                    // System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + updateTs);
                     break;
                 default:
                     System.out.println("취소 되었습니다");
@@ -250,7 +250,8 @@ public class BoardService {
 
     //삭제
     public void deleted(int number) {
-        LinkedHashMap<Integer, Board> listedHashMap = jsonFile.jsonReader();
+        DBMysql dbMysql = new DBMysql();
+        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
         Scanner sc = new Scanner(System.in);
 
         if (listedHashMap.get(number) == null) {
@@ -261,24 +262,10 @@ public class BoardService {
             int deletedIndex = sc.nextInt();
             switch (deletedIndex) {
                 case 1:
-                    String deleteTs = ts();
 
-                    HashMap<String, String> registeredHm = new HashMap<String, String>();
-                    registeredHm.put("title", listedHashMap.get(number).getTitle());
-                    registeredHm.put("content", listedHashMap.get(number).getContent());
-                    registeredHm.put("name", listedHashMap.get(number).getName());
-                    registeredHm.put("createdTs",  listedHashMap.get(number).getCreatedTs());
-                    registeredHm.put("updatedTs", listedHashMap.get(number).getUpdatedTs());
-                    registeredHm.put("deletedTs", deleteTs);
+                    dbMysql.dbDeleted(number);
 
-                    JSONObject deleteData = new JSONObject();
-                    deleteData.put(number, registeredHm);
-                    jsonFile.deleteJsonWriter(deleteData.toJSONString());
-
-                    jsonObject.remove(number);
-                    jsonFile.jsonWriter(jsonObject.toJSONString());
-
-                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 삭제되었습니다.\n삭제일시 : "  + deleteTs);
+                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 삭제되었습니다.\n삭제일시 : "  + ts());
 
                     listedHashMap.remove(number);
                     break;
@@ -328,12 +315,10 @@ public class BoardService {
     }
 
     //시간 등록을 위한 메소드
-    public String ts() {
-        SimpleDateFormat userFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-        Date time = new Date();
-        String ts = userFormat.format(time);
+    public Timestamp ts() {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        return ts;
+        return timestamp;
     }
 
     //게시글 내용 출력
