@@ -11,9 +11,6 @@ import java.util.*;
 public class BoardService {
     public BoardService() {}
 
-    JsonFile jsonFile = new JsonFile();
-    JSONObject jsonObject = new JSONObject();
-
     //등록
     public void registered(String userTitle, String userContent, String userName) {
 
@@ -102,7 +99,8 @@ public class BoardService {
 
     //검색
     public void searched(String searchValue, int searchIndex) {
-        LinkedHashMap<Integer, Board> listedHashMap = jsonFile.jsonReader();
+        DBMysql dbMysql = new DBMysql();
+        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
 
         boolean flag = false;
         switch (searchIndex) {
