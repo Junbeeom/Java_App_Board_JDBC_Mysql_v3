@@ -26,6 +26,7 @@ public class DBMysql {
 
     public int getDeleteNo() { return deleteNo; }
 
+    //등록
     public void dbCreated(String title, String content, String name) {
         System.out.println("dbCreated실행, boardtable 접속 : ");
 
@@ -107,6 +108,7 @@ public class DBMysql {
         return linkedHashMap;
     }
 
+    //삭제
     public void dbDeleted(int no) {
         BoardService boardService = new BoardService();
 
@@ -115,6 +117,7 @@ public class DBMysql {
             conn = DriverManager.getConnection(url, user, password); //접속 (정보가 정확하면 넘어옴)
 
             String sql = "UPDATE boardtable SET deleted_ts = ? WHERE no = ?";
+
             ps = conn.prepareStatement(sql); //실행 객체 생성
 
             ps.setTimestamp(1, boardService.ts());
@@ -143,5 +146,80 @@ public class DBMysql {
             }
         }
     }
+
+    //수정
+    public void dbmodified(int no, String modifiedValue, int modifiedIndex) {
+        BoardService boardService = new BoardService();
+
+        try { //예외처리 필수
+            Class.forName("com.mysql.cj.jdbc.Driver"); //드라이버 로딩
+            conn = DriverManager.getConnection(url, user, password); //접속 (정보가 정확하면 넘어옴)
+
+            switch (modifiedIndex) {
+                //이름
+                case 1:
+                    String sql = "UPDATE boardtable SET name = ?, updated_ts = ? WHERE no = ?";
+                    ps = conn.prepareStatement(sql); //실행 객체 생성
+
+                    StringReader srName = new StringReader(modifiedValue);
+
+                    ps.setCharacterStream(1, srName);
+                    ps.setTimestamp(2, boardService.ts());
+                    ps.setInt(3, no);
+
+                    deleteNo = ps.executeUpdate();
+                    break;
+
+                //제목
+                case 2:
+                    sql = "UPDATE boardtable SET title = ?, updated_ts = ? WHERE no = ?";
+                    ps = conn.prepareStatement(sql); //실행 객체 생성
+
+                    StringReader srTitle = new StringReader(modifiedValue);
+
+                    ps.setCharacterStream(1, srTitle);
+                    ps.setTimestamp(2, boardService.ts());
+                    ps.setInt(3, no);
+
+                    deleteNo = ps.executeUpdate();
+                    break;
+
+                //내용
+                default:
+                    sql = "UPDATE boardtable SET content = ?, updated_ts = ? WHERE no = ?";
+                    ps = conn.prepareStatement(sql); //실행 객체 생성
+
+                    StringReader srContent = new StringReader(modifiedValue);
+
+                    ps.setCharacterStream(1, srContent);
+                    ps.setTimestamp(2, boardService.ts());
+                    ps.setInt(3, no);
+
+                    deleteNo = ps.executeUpdate();
+                    break;
+            }
+
+            if (conn != null) {
+                System.out.println("성공");
+            } else {
+                System.out.println("실패");
+            }
+        } catch (Exception e) { //예외처리
+            e.printStackTrace();
+
+        } finally {
+            try {
+                if (ps != null) ps.close();
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
 
 }
