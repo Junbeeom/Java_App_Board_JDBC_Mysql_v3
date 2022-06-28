@@ -1,225 +1,301 @@
 package com.project.database;
 
-import com.project.board.Board;
 import com.project.board.BoardService;
+import com.project.board.Common;
 
-import java.io.StringReader;
 import java.sql.*;
-import java.util.LinkedHashMap;
+import java.io.StringReader;
+import java.util.Scanner;
+
+import static com.project.board.Common.*;
+
 
 public class DBMysql {
-    public DBMysql() {}
+    Common common = new Common();
+    public DBMysql() {
+    }
 
-    private int updateNo = 0;
-    private int deleteNo = 0;
     private String url = "jdbc:mysql://localhost:3306/board";
     private String user = "root";
     private String password = "26905031";
-    private Connection conn = null;         //접속
-    private PreparedStatement ps = null;   //쿼리문 실행
-    private ResultSet rs = null;          //select문 결과
+    private Connection conn = null;
+    private PreparedStatement pstmt = null;
+    private ResultSet resultSet = null;
 
 
-    public int getUpdateNo() {
-        return updateNo;
-    }
+    //created method to INSERT DB
+    public int dbCreated(String title, String content, String name) throws SQLException {
+        common.result = 0;
 
-    public int getDeleteNo() { return deleteNo; }
-
-    //등록
-    public void dbCreated(String title, String content, String name) {
-        System.out.println("dbCreated실행, boardtable 접속 : ");
-
-        try { //예외처리 필수
-            Class.forName("com.mysql.cj.jdbc.Driver"); //드라이버 로딩
-            conn = DriverManager.getConnection(url, user, password); //접속 (정보가 정확하면 넘어옴)
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, user, password);
 
             String sql = "INSERT INTO boardtable(title, content, name) VALUES(?, ?, ?)";
-            ps = conn.prepareStatement(sql); //실행 객체 생성
+
+            pstmt = conn.prepareStatement(sql);
 
             StringReader srTitle = new StringReader(title);
             StringReader srName = new StringReader(name);
 
-            ps.setCharacterStream(1, srTitle, 20);
-            ps.setString(2, content);
-            ps.setCharacterStream(3, srName, 12);
+            pstmt.setCharacterStream(1, srTitle, 20);
+            pstmt.setString(2, content);
+            pstmt.setCharacterStream(3, srName, 12);
 
-            updateNo = ps.executeUpdate();
+            common.result = pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (pstmt != null) {
+                pstmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+
+        return common.result;
+    }
+
+    public int dbListed() throws SQLException {
+        common.result = 0;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, user, password);
+
+            String sql = "SELECT * FROM boardtable where is_deleted IS FALSE";
+
+            pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            resultSet = pstmt.executeQuery();
+
+            common.result = listPrint(resultSet);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (pstmt != null) {
+                pstmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+        return common.result;
+    }
+
+
+    //delted method to DELETE DB
+    public int dbDeleted(int no) throws SQLException {
+        int result = 0;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, user, password);
+
+            String sql = "UPDATE boardtable SET deleted_ts = CURRENT_TIMESTAMP(), is_deleted = TRUE WHERE no = ?";
+
+            pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            pstmt.setInt(1, no);
+
+            result = pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (pstmt != null) {
+                pstmt.close();
+            }
 
             if (conn != null) {
-                System.out.println("성공");
-            } else {
-                System.out.println("실패");
+                conn.close();
             }
-        } catch (Exception e) { //예외처리
-            e.printStackTrace();
 
-        } finally {
-            try {
-                if (ps != null) ps.close();
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
-            try {
-                if (conn != null) conn.close();
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
         }
+        return result;
     }
 
-    //조회 메소드
-    public LinkedHashMap<Integer, Board> dblisted() {
-        LinkedHashMap linkedHashMap = new LinkedHashMap();
-
-        try { //예외처리 필수
-            Class.forName("com.mysql.cj.jdbc.Driver");                //드라이버 로딩
-            conn = DriverManager.getConnection(url, user, password); //접속 (정보가 정확하면 넘어옴)
-        } catch (Exception e) {                                     //예외처리
-            e.printStackTrace();
-        }
-
-        String sql = "SELECT * FROM boardtable where deleted_ts IS NULL";
-
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            try (ResultSet resultSet = ps.executeQuery()) {
-
-                //테이블의 모든 건을 가져와야 한다.
-                while (resultSet.next()) {
-
-                    int id = resultSet.getInt("no");
-                    String title = resultSet.getString("title");
-                    String content = resultSet.getString("content");
-                    String name = resultSet.getString("name");
-                    String createdTs = resultSet.getString("created_ts");
-                    String updatedTs = resultSet.getString("updated_ts");
-                    String deletedTs = resultSet.getString("deleted_ts");
-
-                    linkedHashMap.put(id, new Board(title, content, name, createdTs, updatedTs, deletedTs));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return linkedHashMap;
-    }
-
-    //삭제
-    public void dbDeleted(int no) {
+    //updated method to UPDATE DB
+    public int dbUpdated(int no) throws SQLException {
+        Scanner sc = new Scanner(System.in);
         BoardService boardService = new BoardService();
+        common.result = 1;
 
-        try { //예외처리 필수
-            Class.forName("com.mysql.cj.jdbc.Driver"); //드라이버 로딩
-            conn = DriverManager.getConnection(url, user, password); //접속 (정보가 정확하면 넘어옴)
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, user, password);
 
-            String sql = "UPDATE boardtable SET deleted_ts = ? WHERE no = ?";
+            String sql = "SELECT * FROM boardtable WHERE no = ? AND is_deleted IS FALSE";
+            pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-            ps = conn.prepareStatement(sql); //실행 객체 생성
+            pstmt.setInt(1, no);
+            resultSet = pstmt.executeQuery();
 
-            ps.setTimestamp(1, boardService.ts());
-            ps.setInt(2, no);
-
-            deleteNo = ps.executeUpdate();
-
-            if (conn != null) {
-                System.out.println("성공");
-            } else {
-                System.out.println("실패");
+            if(!resultSet.next()) {
+                common.result = 0;
+                return  common.result;
             }
-        } catch (Exception e) { //예외처리
-            e.printStackTrace();
+            System.out.println("작성자 수정 1번\n제목 수정 2번\n내용 수정 3번\n취소 4번 입력");
+            int modifiedIndex = sc.nextInt();
 
-        } finally {
-            try {
-                if (ps != null) ps.close();
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
-            try {
-                if (conn != null) conn.close();
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
-        }
-    }
-
-    //수정
-    public void dbmodified(int no, String modifiedValue, int modifiedIndex) {
-        BoardService boardService = new BoardService();
-
-        try { //예외처리 필수
-            Class.forName("com.mysql.cj.jdbc.Driver"); //드라이버 로딩
-            conn = DriverManager.getConnection(url, user, password); //접속 (정보가 정확하면 넘어옴)
-
-            switch (modifiedIndex) {
+            switch (common.typeHash.get(modifiedIndex)) {
                 //이름
-                case 1:
-                    String sql = "UPDATE boardtable SET name = ?, updated_ts = ? WHERE no = ?";
-                    ps = conn.prepareStatement(sql); //실행 객체 생성
+                case BOARD_NAME:
+                    System.out.println("수정하실 이름을 입력하세요");
+                    String modifiedValue = sc.next();
+                    modifiedValue = common.validation(BOARD_NAME, modifiedValue);
+
+                    sql = "UPDATE boardtable SET name = ?, updated_ts = CURRENT_TIMESTAMP() WHERE no = ?";
+                    pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
                     StringReader srName = new StringReader(modifiedValue);
 
-                    ps.setCharacterStream(1, srName);
-                    ps.setTimestamp(2, boardService.ts());
-                    ps.setInt(3, no);
+                    pstmt.setCharacterStream(1, srName);
+                    pstmt.setInt(2, no);
 
-                    deleteNo = ps.executeUpdate();
+                    common.result = pstmt.executeUpdate();
                     break;
 
                 //제목
-                case 2:
-                    sql = "UPDATE boardtable SET title = ?, updated_ts = ? WHERE no = ?";
-                    ps = conn.prepareStatement(sql); //실행 객체 생성
+                case BOARD_TITLE:
+                    System.out.println("수정하실 제목을 입력하세요");
+                    modifiedValue = sc.next();
+
+                    modifiedValue = common.validation(BOARD_TITLE, modifiedValue);
+                    sql = "UPDATE boardtable SET title = ?,  updated_ts = CURRENT_TIMESTAMP() WHERE no = ?";
+                    pstmt = conn.prepareStatement(sql);
 
                     StringReader srTitle = new StringReader(modifiedValue);
 
-                    ps.setCharacterStream(1, srTitle);
-                    ps.setTimestamp(2, boardService.ts());
-                    ps.setInt(3, no);
+                    pstmt.setCharacterStream(1, srTitle);
+                    pstmt.setInt(2, no);
 
-                    deleteNo = ps.executeUpdate();
+                    common.result = pstmt.executeUpdate();
                     break;
 
                 //내용
-                default:
-                    sql = "UPDATE boardtable SET content = ?, updated_ts = ? WHERE no = ?";
-                    ps = conn.prepareStatement(sql); //실행 객체 생성
+                case BOARD_CONTENT:
+                    sc.nextLine();
+                    System.out.println("수정하실 내용을 입력하세요");
+                    modifiedValue = sc.nextLine();
+                    modifiedValue = common.validation(BOARD_CONTENT, modifiedValue);
+
+                    sql = "UPDATE boardtable SET content = ?,  updated_ts = CURRENT_TIMESTAMP() WHERE no = ?";
+
+                    pstmt = conn.prepareStatement(sql);
 
                     StringReader srContent = new StringReader(modifiedValue);
 
-                    ps.setCharacterStream(1, srContent);
-                    ps.setTimestamp(2, boardService.ts());
-                    ps.setInt(3, no);
+                    pstmt.setCharacterStream(1, srContent);
+                    pstmt.setInt(2, no);
 
-                    deleteNo = ps.executeUpdate();
+                    common.result = pstmt.executeUpdate();
+                    break;
+                default:
                     break;
             }
-
-            if (conn != null) {
-                System.out.println("성공");
-            } else {
-                System.out.println("실패");
-            }
-        } catch (Exception e) { //예외처리
+        } catch (Exception e) {
             e.printStackTrace();
 
         } finally {
-            try {
-                if (ps != null) ps.close();
-            } catch (Exception e2) {
-                e2.printStackTrace();
+            if (pstmt != null) {
+                pstmt.close();
             }
-            try {
-                if (conn != null) conn.close();
-            } catch (Exception e2) {
-                e2.printStackTrace();
+            if (conn != null) {
+                conn.close();
             }
         }
+        return common.result;
     }
 
+    //search method to SELECT DB
+    public int dbSearched(String type, String searchedValue) throws SQLException {
+        common.result = 1;
 
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(url, user, password);
+
+            switch (type) {
+                //이름 검색
+                case BOARD_NAME:
+                    String sql = "SELECT * FROM boardtable WHERE name LIKE ? AND is_deleted IS FALSE";
+                    pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+                    StringReader searchName = new StringReader(searchedValue);
+                    pstmt.setCharacterStream(1, searchName);
+
+                    resultSet = pstmt.executeQuery();
+
+                    common.result= listPrint(resultSet);
+                    break;
+
+                //제목 검색
+                case BOARD_TITLE:
+                    sql = "SELECT * FROM boardtable WHERE title LIKE ? AND is_deleted IS FALSE";
+                    pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+                    StringReader searchTitle = new StringReader(searchedValue);
+                    pstmt.setCharacterStream(1, searchTitle);
+
+                    resultSet = pstmt.executeQuery();
+
+                    common.result = listPrint(resultSet);
+                    break;
+
+                //내용 검색
+                case BOARD_CONTENT:
+                    sql = "SELECT * FROM boardtable WHERE content LIKE ? AND is_deleted IS FALSE";
+                    pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+                    StringReader searchContent = new StringReader(searchedValue);
+                    pstmt.setCharacterStream(1, searchContent);
+
+                    resultSet = pstmt.executeQuery();
+
+                    common.result = listPrint(resultSet);
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (pstmt != null) {
+                pstmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+        return common.result;
+    }
+    //print method to SELECT FROM BOARDTABLE
+    public int listPrint(ResultSet resultSet) throws SQLException {
+        common.result = 1;
+
+        if(!resultSet.next()) {
+            System.out.println("게시물이 없습니다.");
+        } else {
+            resultSet.beforeFirst();
+
+            while (resultSet.next()) {
+                System.out.println("고유번호 : " + resultSet.getInt("no"));
+                System.out.println("작 성 자 : " + resultSet.getString("name"));
+                System.out.println("제    목 : " + resultSet.getString("title"));
+                System.out.println("내    용 : " + resultSet.getString("content"));
+                System.out.println("등록일시 : " + resultSet.getString("created_ts"));
+                System.out.println("수정일시 : " + resultSet.getString("updated_ts"));
+                System.out.println("===============================================");
+            }
+        }
+
+           if(resultSet.getMetaData().getColumnCount() == 0) {
+               common.result = 0;
+           }
+
+        return common.result;
+    }
 }

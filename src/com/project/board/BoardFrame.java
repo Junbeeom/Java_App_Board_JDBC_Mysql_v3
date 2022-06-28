@@ -1,11 +1,14 @@
 package com.project.board;
+import static com.project.board.Common.*;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class BoardFrame {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         Scanner sc = new Scanner(System.in);
 
+        Common common = new Common();
         BoardService boardService = new BoardService();
 
         boolean flag = true;
@@ -24,18 +27,21 @@ public class BoardFrame {
                 //등록하기
                 case 1:
                     System.out.println("작성자 이름을 입력하세요 : ");
+                    //버퍼 비우기
                     sc.nextLine();
-                    String userName = sc.nextLine() ;
-                    userName = boardService.nameCheck(sc, userName);
 
+                    String userName = sc.nextLine() ;
+                    userName = common.validation(BOARD_NAME, userName);
 
                     System.out.println("제목을 입력하세요 : ");
                     String userTitle = sc.nextLine();
-                    userTitle = boardService.titleCheck(sc, userTitle);
+
+                    userTitle = common.validation(BOARD_TITLE, userTitle);
 
                     System.out.println("내용을 입력하세요. 줄바꿈은 \\n을 입력하세요");
                     String userContent = sc.nextLine();
-                    userContent = boardService.contentCheck(sc, userContent);
+
+                    userContent = common.validation(BOARD_CONTENT, userContent);
 
                     boardService.registered(userTitle, userContent, userName);
                     break;
@@ -44,32 +50,38 @@ public class BoardFrame {
                 case 2:
                     System.out.println("게시글의 고유번호를 입력하세요. ");
                     int number = sc.nextInt();
+
                     boardService.deleted(number);
                     break;
 
                 //검색하기
                 case 3:
-                    System.out.println("작성자로 검색 1번\n제목으로 검색 2번\n내용으로 검색 3번\n취소 아무키 입력");
-                    int choice = sc.nextInt();
-                    switch (choice) {
-                        case 1:
+                    System.out.println("작성자로 검색 1번\n제목으로 검색 2번\n내용으로 검색 3번\n취소 4번 입력");
+
+                    number = sc.nextInt();
+                    switch (typeHash.get(number)) {
+                        case BOARD_NAME:
                             System.out.println("등록된 작성자의 이름을 입력하세요");
                             userName = sc.next();
-                            boardService.nameCheck(sc, userName);
-                            boardService.searched(userName, choice);
+                            userName = common.validation(BOARD_NAME, userName);
+
+                            boardService.searched(BOARD_NAME, userName);
                             break;
-                        case 2:
+
+                        case BOARD_TITLE:
                             System.out.println("등록된 게시글의 제목을 입력하세요");
                             userTitle = sc.next();
-                            boardService.contentCheck(sc, userTitle);
-                            boardService.searched(userTitle, choice);
+                            userTitle = common.validation(BOARD_TITLE, userTitle);
+                            boardService.searched(BOARD_TITLE, userTitle);
                             break;
-                        case 3:
+
+                        case BOARD_CONTENT:
                             System.out.println("등록된 게시글의 내용을 입력하세요");
                             userContent = sc.next();
-                            boardService.nameCheck(sc, userContent);
-                            boardService.searched(userContent, choice);
+                            userContent = common.validation(BOARD_CONTENT, userContent);
+                            boardService.searched(BOARD_CONTENT, userContent);
                             break;
+
                         default:
                             break;
                     }

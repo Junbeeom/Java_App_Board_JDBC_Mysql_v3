@@ -1,301 +1,101 @@
 package com.project.board;
 
 import com.project.database.DBMysql;
-import com.project.file.JsonFile;
-import org.json.simple.JSONObject;
+import static com.project.board.Common.*;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
-
 
 public class BoardService {
     public BoardService() {}
 
+    DBMysql dbMysql = new DBMysql();
+    Common common = new Common();
+
     //등록
-    public void registered(String userTitle, String userContent, String userName) {
+    public void registered(String userTitle, String userContent, String userName) throws SQLException {
+        common.result = dbMysql.dbCreated(userTitle, userContent, userName);
 
-        DBMysql dbMysql = new DBMysql();
-        dbMysql.dbCreated(userTitle, userContent, userName);
-
-        System.out.println("\n" + userName + "님의 게시글 등록이 완료 되었습니다.\n게시글 고유번호는 " +  dbMysql.getUpdateNo()+ "입니다.");
+        if(common.result == 1) {
+            System.out.println("\n" + userName + "님의 게시글 등록이 완료 되었습니다.");
+        } else {
+            System.out.println("등록 실패 했습니다.");
+        }
     }
 
     //조회
-    public void listed() {
-        DBMysql dbMysql = new DBMysql();
-        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
+    public void listed() throws SQLException {
 
-        Scanner sc = new Scanner(System.in);
-        int limit = 3;
-        int offset;
-        int cnt = 0;
+        common.result = dbMysql.dbListed();
 
-        System.out.println("현재 페이지는 '1page'입니다.\n등록된 게시글의 수는 총 " + listedHashMap.size() + " 개 입니다. ");
-
-        //조회 메소드 실행시 출력되는 기본 list
-        for (int key : listedHashMap.keySet()) {
-            listPrint(key);
-            cnt++;
-
-            if(cnt == limit) {
-                break;
-            }
-        }
-
-        //게시글이 4개부터 실행되는 로직
-        if (listedHashMap.size() > limit) {
-            System.out.println("페이지 이동은 1번, 메뉴로 이동는 2번");
-            int switchNumber = sc.nextInt();
-
-            switch (switchNumber) {
-                case 1:
-                    System.out.print("이동 가능한 페이지 개수는 " + listedHashMap.size() / limit + "개 입니다. \n이동하실 page를 입력하세요\n ");
-                    int page = sc.nextInt();
-
-                    offset = limit * page - limit;
-                    cnt = 1;
-
-                    System.out.println("================================");
-                    System.out.println("현재 페이지는 " + page + "입니다");
-
-                    for (int key : listedHashMap.keySet()) {
-                        if(cnt > offset && cnt <= limit * page) {
-                            listPrint(key);
-                        }
-                        cnt++;
-                    }
-
-                    //추가 페이지 이동 여부 확인
-                    while (true) {
-                        System.out.println("추가적인 페이지이동 1번, 취소2번");
-
-                        if (sc.nextInt() == 1) {
-                            System.out.print("이동 가능한 페이지 개수는 " + listedHashMap.size() / limit + "개 입니다. \n이동하실 page를 입력하세요\n ");
-                            page = sc.nextInt();
-
-                            offset = limit * page - limit;
-                            cnt = 1;
-                            System.out.println("================================");
-                            System.out.println("현재 페이지는 " + page + "입니다");
-
-                            for (int key : listedHashMap.keySet()) {
-                                if(cnt > offset && cnt <= limit * page) {
-                                    listPrint(key);
-                                }
-                                cnt++;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    break;
-
-                default:
-                    System.out.println("취소 되었습니다");
-                    break;
-            }
+        if(common.result == 0) {
+            System.out.println("조회를 실패하였습니다.");
         }
     }
 
     //검색
-    public void searched(String searchValue, int searchIndex) {
-        DBMysql dbMysql = new DBMysql();
-        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
+    public void searched(String type, String searchValue) throws SQLException {
+        searchValue = common.validation(type, searchValue);
 
-        boolean flag = false;
-        switch (searchIndex) {
-
+        switch (type) {
             //이름으로 검색
-            case 1:
-                for (int key : listedHashMap.keySet()) {
-                    if (listedHashMap.get(key).getName().contains(searchValue)) {
-                        listPrint(key);
-                        flag = true;
-                    }
-                }
-                if (!flag) {
-                    System.out.println("등록된 작성자가 없습니다.");
+            case BOARD_NAME:
+                searchValue = "%" + searchValue + "%";
+                common.result = dbMysql.dbSearched(type, searchValue);
+
+                if(common.result == 0) {
+                    System.out.println("조회를 실패하였습니다.");
                 }
                 break;
 
             //제목으로 검색
-            case 2:
-                for (int key : listedHashMap.keySet()) {
-                    if (listedHashMap.get(key).getTitle().contains(searchValue)) {
-                        listPrint(key);
-                        flag = true;
-                    }
-                }
-                if (!flag) {
-                    System.out.println("등록된 제목이 없습니다.");
+            case BOARD_TITLE:
+                searchValue = "%" + searchValue + "%";
+                common.result = dbMysql.dbSearched(type, searchValue);
+
+                if(common.result == 0) {
+                    System.out.println("조회를 실패하였습니다.");
                 }
                 break;
 
             //내용으로 검색
-            case 3:
-                for (int key : listedHashMap.keySet()) {
-                    if (listedHashMap.get(key).getContent().contains(searchValue)) {
-                        listPrint(key);
-                        flag = true;
-                    }
-                }
-                if (!flag) {
-                    System.out.println("등록된 내용이 없습니다.");
+            case BOARD_CONTENT:
+                searchValue = "%" + searchValue + "%";
+                common.result = dbMysql.dbSearched(type, searchValue);
+
+                if(common.result == 0) {
+                    System.out.println("조회를 실패하였습니다.");
                 }
                 break;
+
             default:
                 break;
         }
     }
 
     //수정
-    public void modified(int number) {
-        DBMysql dbMysql = new DBMysql();
+    public void modified(int number) throws SQLException {
 
-        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
-        Scanner sc = new Scanner(System.in);
+        common.result = dbMysql.dbUpdated(number);
 
-        if (listedHashMap.get(number) == null) {
-            System.out.println("존재하지 않는 게시글입니다");
+        if(common.result == 0) {
+            System.out.println("게시글이 없습니다.");
         } else {
-            System.out.println("1.이름 수정\n2.제목 수정\n3.내용 수정\n4.취소는 아무키 입력");
-
-            int modifiedIndex = sc.nextInt();
-            switch (modifiedIndex) {
-
-                //이름 수정
-                case 1:
-                    System.out.println("수정하실 이름을 입력하세요");
-                    sc.nextLine();
-                    String newName = sc.nextLine();
-
-                    newName = nameCheck(sc, newName);
-                    dbMysql.dbmodified(number, newName, modifiedIndex);
-
-                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + ts());
-                    break;
-
-                //제목 수정
-                case 2:
-                    System.out.println("수정하실 제목을 입력하세요");
-                    sc.nextLine();
-                    String newTitle = sc.nextLine();
-
-                    newTitle = titleCheck(sc, newTitle);
-
-                    dbMysql.dbmodified(number, newTitle, modifiedIndex);
-                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + ts());
-                    break;
-
-                //내용 수정
-                case 3:
-                    System.out.println("수정하실 내용을 입력하세요");
-                    sc.nextLine();
-                    String newContent = sc.nextLine();
-
-                    newContent = contentCheck(sc, newContent);
-
-                    dbMysql.dbmodified(number, newContent, modifiedIndex);
-                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 수정되었습니다.\n수정일시 : "  + ts());
-                    break;
-
-                default:
-                    System.out.println("취소 되었습니다");
-                    break;
-            }
+            System.out.println("게시글 수정이 완료되었습니다.");
         }
     }
+
 
     //삭제
-    public void deleted(int number) {
-        DBMysql dbMysql = new DBMysql();
-        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
-        Scanner sc = new Scanner(System.in);
+    public void deleted(int number) throws SQLException {
 
-        if (listedHashMap.get(number) == null) {
-            System.out.println("존재하지 않는 게시글입니다");
+        common.result = dbMysql.dbDeleted(number);
+
+        if(common.result == 1) {
+            System.out.println("게시글이 삭제되었습니다.");
         } else {
-            System.out.println("삭제 1번, 취소 2번");
-
-            int deletedIndex = sc.nextInt();
-            switch (deletedIndex) {
-                case 1:
-
-                    dbMysql.dbDeleted(number);
-
-                    System.out.println(listedHashMap.get(number).getName() + "님의 게시글이 삭제되었습니다.\n삭제일시 : "  + ts());
-
-                    listedHashMap.remove(number);
-                    break;
-
-                default:
-                    System.out.println("취소 되었습니다");
-                    break;
-            }
+            System.out.println("존재하지 않는 게시글입니다.");
         }
-    }
-
-    //제목 유효성 검증
-    public String titleCheck (Scanner sc, String title){
-        if (title.length() <= 12) {
-            return title;
-        } else {
-            System.out.println("제목은 12글자 이하로 입력해야 합니다.\n다시 입력하세요.");
-            title = sc.nextLine();
-            return this.titleCheck(sc, title);
-        }
-    }
-
-    //이름 유효성 검증
-    public String nameCheck (Scanner sc, String name){
-        String isKoreanCheck = "^[가-힣]*$";
-        String isAlaphaCheck = "^[a-zA-Z]*$";
-        if (name.matches(isKoreanCheck) || name.matches(isAlaphaCheck)) {
-            return name;
-        } else {
-            System.out.println("올바른 형식을 입력하세요\n한글 및 영어만 입력하세요.");
-            name = sc.nextLine();
-
-            return this.nameCheck(sc, name);
-        }
-    }
-
-    //내용 유효성 검증
-    public String contentCheck (Scanner sc, String content){
-        if (content.length() <= 200) {
-            return content;
-        } else {
-            System.out.println("내용은 200자 이하로 작성할 수 있습니다.\n글자수에 맞게 다시 작성하세요");
-            content = sc.nextLine();
-
-            return this.contentCheck(sc, content);
-        }
-    }
-
-    //시간 등록을 위한 메소드
-    public Timestamp ts() {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-        return timestamp;
-    }
-
-    //게시글 내용 출력
-    public void listPrint(int key) {
-        DBMysql dbMysql = new DBMysql();
-        LinkedHashMap<Integer, Board> listedHashMap = dbMysql.dblisted();
-
-        System.out.println("고유번호 : " + key);
-        System.out.println("작 성 자 : " + listedHashMap.get(key).getName());
-        System.out.println("제    목 : " + listedHashMap.get(key).getTitle());
-
-        System.out.println("내    용 : ");
-        StringTokenizer stk = new StringTokenizer(listedHashMap.get(key).getContent(), "\\n");
-        while (stk.hasMoreTokens()) {
-            System.out.println(stk.nextToken());
-        }
-
-        System.out.println("등록일시 : " + listedHashMap.get(key).getCreatedTs());
-        System.out.println("수정일시 : " + listedHashMap.get(key).getUpdatedTs());
-        System.out.println("==============================");
     }
 }
