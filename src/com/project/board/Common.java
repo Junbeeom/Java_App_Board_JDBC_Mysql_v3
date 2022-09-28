@@ -19,7 +19,7 @@ public class Common {
     public String validation(String type, String value) {
         Scanner sc = new Scanner(System.in);
 
-        switch (type) {
+        switch(type) {
             case BOARD_NAME:
                 //이름 유효성 체크
                 String isKoreanCheck = "^[가-힣]*$";
@@ -45,7 +45,7 @@ public class Common {
 
             case BOARD_CONTENT:
                 //내용 유효성 체크
-                if (value.length() <= 200) {
+                if(value.length() <= 200) {
                     return value;
                 } else {
                     System.out.println("내용은 200자 이하로 작성할 수 있습니다.\n글자수에 맞게 다시 작성하세요");

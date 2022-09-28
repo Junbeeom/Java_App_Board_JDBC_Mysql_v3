@@ -38,7 +38,7 @@ public class BoardService {
     public void searched(String type, String searchValue) throws SQLException {
         searchValue = common.validation(type, searchValue);
 
-        switch (type) {
+        switch(type) {
             //이름으로 검색
             case BOARD_NAME:
                 searchValue = "%" + searchValue + "%";

@@ -43,13 +43,13 @@ public class DBMysql {
             pstmt.setCharacterStream(3, srName, 12);
 
             common.result = pstmt.executeUpdate();
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         } finally {
-            if (pstmt != null) {
+            if(pstmt != null) {
                 pstmt.close();
             }
-            if (conn != null) {
+            if(conn != null) {
                 conn.close();
             }
         }
@@ -72,13 +72,13 @@ public class DBMysql {
 
             common.result = listPrint(resultSet);
 
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         } finally {
-            if (pstmt != null) {
+            if(pstmt != null) {
                 pstmt.close();
             }
-            if (conn != null) {
+            if(conn != null) {
                 conn.close();
             }
         }
@@ -102,14 +102,14 @@ public class DBMysql {
 
             result = pstmt.executeUpdate();
 
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         } finally {
-            if (pstmt != null) {
+            if(pstmt != null) {
                 pstmt.close();
             }
 
-            if (conn != null) {
+            if(conn != null) {
                 conn.close();
             }
 
@@ -140,7 +140,7 @@ public class DBMysql {
             System.out.println("작성자 수정 1번\n제목 수정 2번\n내용 수정 3번\n취소 4번 입력");
             int modifiedIndex = sc.nextInt();
 
-            switch (common.typeHash.get(modifiedIndex)) {
+            switch(common.typeHash.get(modifiedIndex)) {
                 //이름
                 case BOARD_NAME:
                     System.out.println("수정하실 이름을 입력하세요");
@@ -196,14 +196,14 @@ public class DBMysql {
                 default:
                     break;
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
 
         } finally {
-            if (pstmt != null) {
+            if(pstmt != null) {
                 pstmt.close();
             }
-            if (conn != null) {
+            if(conn != null) {
                 conn.close();
             }
         }
@@ -218,7 +218,7 @@ public class DBMysql {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url, user, password);
 
-            switch (type) {
+            switch(type) {
                 //이름 검색
                 case BOARD_NAME:
                     String sql = "SELECT * FROM boardtable WHERE name LIKE ? AND is_deleted IS FALSE";
@@ -260,13 +260,13 @@ public class DBMysql {
                 default:
                     break;
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         } finally {
-            if (pstmt != null) {
+            if(pstmt != null) {
                 pstmt.close();
             }
-            if (conn != null) {
+            if(conn != null) {
                 conn.close();
             }
         }
@@ -281,7 +281,7 @@ public class DBMysql {
         } else {
             resultSet.beforeFirst();
 
-            while (resultSet.next()) {
+            while(resultSet.next()) {
                 System.out.println("고유번호 : " + resultSet.getInt("no"));
                 System.out.println("작 성 자 : " + resultSet.getString("name"));
                 System.out.println("제    목 : " + resultSet.getString("title"));
