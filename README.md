@@ -22,10 +22,11 @@
 # 4.프로젝트 설계
 
 ### 4.1 board 패키지
-<img width="391" alt="스크린샷 2022-09-27 오후 7 56 20" src="https://user-images.githubusercontent.com/103010985/192507833-f5b205cb-a04f-42ab-8e4e-23a7167204bd.png">
+<img width="385" alt="스크린샷 2022-09-28 오후 1 48 23" src="https://user-images.githubusercontent.com/103010985/192689931-e5a04c63-cdd8-475b-ab93-f4e437d0def6.png">
 
-### 4.2 file 패키지
-<img width="431" alt="스크린샷 2022-09-27 오후 7 57 42" src="https://user-images.githubusercontent.com/103010985/192508072-72e2cbe8-256d-4432-9e0a-19ce538be4f4.png">
+### 4.2 database 패키지
+<img width="342" alt="스크린샷 2022-09-28 오후 1 48 56" src="https://user-images.githubusercontent.com/103010985/192689996-ad96eb78-a5c1-486d-a5a1-0520ea7f2105.png">
+
 
 # 5.기본 기능
 - 등록 registered 
@@ -38,182 +39,178 @@
 
 # 6.핵심 기능
 
-### 6.1 조회시 Pagination 기능 구현
+### 6.1 Common Class 구현
 
 ```java
-    //조회
-    public void listed() {
+public class Common {
+    public static int result = 0;
+    public static final String BOARD_NAME = "name";
+    public static final String BOARD_TITLE = "title";
+    public static final String BOARD_CONTENT = "content";
+
+    public static final HashMap<Integer, String> typeHash = new HashMap<>();
+    static {
+        typeHash.put(1, BOARD_NAME);
+        typeHash.put(2, BOARD_TITLE);
+        typeHash.put(3, BOARD_CONTENT);
+    }
+
+    public String validation(String type, String value) {
         Scanner sc = new Scanner(System.in);
-        int limit = 3;
-        int offset;
-        int cnt = 0;
 
-        System.out.println("현재 페이지는 '1page'입니다.\n등록된 게시글의 수는 총 " + listedHashMap.size() + " 개 입니다. ");
+        switch (type) {
+            case BOARD_NAME:
+                //이름 유효성 체크
+                String isKoreanCheck = "^[가-힣]*$";
+                String isAlaphaCheck = "^[a-zA-Z]*$";
 
-        //조회 메소드 실행시 출력되는 기본 list
-        for (int key : listedHashMap.keySet()) {
-            listPrint(key);
-            cnt++;
+                if (value.matches(isKoreanCheck) || value.matches(isAlaphaCheck)) {
+                    return value;
+                } else {
+                    System.out.println("올바른 형식을 입력하세요\n한글 및 영어만 입력하세요.");
+                    value = sc.nextLine();
+                    return this.validation(type, value);
+                }
 
-            if(cnt == limit) {
+            case BOARD_TITLE:
+                //제목 유효성 체크
+                if (value.length() <= 12) {
+                    return value;
+                } else {
+                    System.out.println("제목은 12글자 이하로 입력해야 합니다.\n다시 입력하세요.");
+                    value = sc.nextLine();
+                    return this.validation(type, value);
+                }
+
+            case BOARD_CONTENT:
+                //내용 유효성 체크
+                if (value.length() <= 200) {
+                    return value;
+                } else {
+                    System.out.println("내용은 200자 이하로 작성할 수 있습니다.\n글자수에 맞게 다시 작성하세요");
+                    value = sc.nextLine();
+                    return this.validation(type, value);
+                }
+
+            default:
                 break;
-            }
         }
-
-        //게시글이 4개부터 실행되는 로직
-        if (listedHashMap.size() > limit) {
-            System.out.println("페이지 이동은 1번, 메뉴로 이동는 2번");
-            int switchNumber = sc.nextInt();
-
-            switch (switchNumber) {
-                case 1:
-                    System.out.print("이동 가능한 페이지 개수는 " + listedHashMap.size() / limit + "개 입니다. \n이동하실 page를 입력하세요\n ");
-                    int page = sc.nextInt();
-
-                    offset = limit * page - limit;
-                    cnt = 1;
-
-                    System.out.println("================================");
-                    System.out.println("현재 페이지는 " + page + "입니다");
-
-                    for (int key : listedHashMap.keySet()) {
-                        if(cnt > offset && cnt <= limit * page) {
-                            listPrint(key);
-                        }
-                        cnt++;
-                    }
-
-                    //추가 페이지 이동 여부 확인
-                    while (true) {
-                        System.out.println("추가적인 페이지이동 1번, 취소2번");
-
-                        if (sc.nextInt() == 1) {
-                            System.out.print("이동 가능한 페이지 개수는 " + listedHashMap.size() / limit + "개 입니다. \n이동하실 page를 입력하세요\n ");
-                            page = sc.nextInt();
-
-                            offset = limit * page - limit;
-                            cnt = 1;
-                            System.out.println("================================");
-                            System.out.println("현재 페이지는 " + page + "입니다");
-
-                            for (int key : listedHashMap.keySet()) {
-                                if(cnt > offset && cnt <= limit * page) {
-                                    listPrint(key);
-                                }
-                                cnt++;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    break;
-
-                default:
-                    System.out.println("취소 되었습니다");
-                    break;
-            }
-        }
+        return value;
     }
+}
 ```
 
-### 6.2 registered, searched, modified Method 호출시 Parameter 유효성 검증 Method
+### 6.2 BoardService
 ```java
-    //제목 유효성 검증
-    public String titleCheck (Scanner sc, String title){
-        if (title.length() <= 12) {
-            return title;
-        } else {
-            System.out.println("제목은 12글자 이하로 입력해야 합니다.\n다시 입력하세요.");
-            title = sc.nextLine();
-            return this.titleCheck(sc, title);
-        }
-    }
-    
-    //이름 유효성 검증
-    public String nameCheck (Scanner sc, String name){
-        String isKoreanCheck = "^[가-힣]*$";
-        String isAlaphaCheck = "^[a-zA-Z]*$";
-        if (name.matches(isKoreanCheck) || name.matches(isAlaphaCheck)) {
-            return name;
-        } else {
-            System.out.println("올바른 형식을 입력하세요\n한글 및 영어만 입력하세요.");
-            name = sc.nextLine();
 
-            return this.nameCheck(sc, name);
-        }
-    }
-    
-    //내용 유효성 검증
-    public String contentCheck (Scanner sc, String content){
-        if (content.length() <= 200) {
-            return content;
-        } else {
-            System.out.println("내용은 200자 이하로 작성할 수 있습니다.\n글자수에 맞게 다시 작성하세요");
-            content = sc.nextLine();
+public class BoardService {
+    public BoardService() {}
 
-            return this.contentCheck(sc, content);
-        }
-    }
-```
-
-### 6.3 json형태의 data Parsing
-```java
+    DBMysql dbMysql = new DBMysql();
+    Common common = new Common();
 
     //등록
-    public void registered(String userTitle, String userContent, String userName) {
-        String createdts = ts();
+    public void registered(String userTitle, String userContent, String userName) throws SQLException {
+        common.result = dbMysql.dbCreated(userTitle, userContent, userName);
 
-        HashMap<String, String> registeredHm = new HashMap<String, String>();
-        registeredHm.put("title", userTitle);
-        registeredHm.put("content", userContent);
-        registeredHm.put("name", userName);
-        registeredHm.put("createdTs", createdts);
-        registeredHm.put("updatedTs", "-");
-        registeredHm.put("deletedTs", "-");
-
-        jsonObject.put((jsonObject.size() + 1), registeredHm);
-        jsonFile.jsonWriter(jsonObject.toJSONString());
-
-        System.out.println("\n" + userName + "님의 게시글 등록이 완료 되었습니다.\n게시글 고유번호는 " + jsonObject.size() + "입니다.");
-    }
-    
-    //json Data to Read
-    public LinkedHashMap<Integer, Board> jsonReader() {
-        LinkedHashMap<Integer, Board> listedHashMap = new LinkedHashMap<>();
-
-        try(FileReader fileReader = new FileReader("./boardData.txt")) {
-            JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(fileReader);
-
-            Iterator itr = jsonObject.keySet().iterator();
-
-            int cnt = 1;
-
-            while (itr.hasNext()) {
-                HashMap<String, String> tmpJson = (HashMap<String, String>) jsonObject.get(itr.next());
-
-                listedHashMap.put(cnt, new Board(tmpJson.get("title"), tmpJson.get("content"), tmpJson.get("name"), tmpJson.get("createdTs"), tmpJson.get("updatedTs"), tmpJson.get("deletedTs")));
-                cnt++;
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if(common.result == 1) {
+            System.out.println("\n" + userName + "님의 게시글 등록이 완료 되었습니다.");
+        } else {
+            System.out.println("등록 실패 했습니다.");
         }
-
-        return listedHashMap;
     }
+
+    //조회
+    public void listed() throws SQLException {
+
+        common.result = dbMysql.dbListed();
+
+        if(common.result == 0) {
+            System.out.println("조회를 실패하였습니다.");
+        }
+    }
+
+    //검색
+    public void searched(String type, String searchValue) throws SQLException {
+        searchValue = common.validation(type, searchValue);
+
+        switch (type) {
+            //이름으로 검색
+            case BOARD_NAME:
+                searchValue = "%" + searchValue + "%";
+                common.result = dbMysql.dbSearched(type, searchValue);
+
+                if(common.result == 0) {
+                    System.out.println("조회를 실패하였습니다.");
+                }
+                break;
+
+            //제목으로 검색
+            case BOARD_TITLE:
+                searchValue = "%" + searchValue + "%";
+                common.result = dbMysql.dbSearched(type, searchValue);
+
+                if(common.result == 0) {
+                    System.out.println("조회를 실패하였습니다.");
+                }
+                break;
+
+            //내용으로 검색
+            case BOARD_CONTENT:
+                searchValue = "%" + searchValue + "%";
+                common.result = dbMysql.dbSearched(type, searchValue);
+
+                if(common.result == 0) {
+                    System.out.println("조회를 실패하였습니다.");
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    //수정
+    public void modified(int number) throws SQLException {
+
+        common.result = dbMysql.dbUpdated(number);
+
+        if(common.result == 0) {
+            System.out.println("게시글이 없습니다.");
+        } else {
+            System.out.println("게시글 수정이 완료되었습니다.");
+        }
+    }
+
+
+    //삭제
+    public void deleted(int number) throws SQLException {
+
+        common.result = dbMysql.dbDeleted(number);
+
+        if(common.result == 1) {
+            System.out.println("게시글이 삭제되었습니다.");
+        } else {
+            System.out.println("존재하지 않는 게시글입니다.");
+        }
+    }
+}
+
+    
 
 ```
 
 # 7.회고
 
-### 7.2 Java_Application_verson 2.1
-1. 로컬 메모리에서 Data를 관리하면 컴파일 되는 시점마다 Data가 reset 되었다. File Class는 파일 생성 및 삭제 기능을 제공하고 있으며, 이를 활용하여 Data를 관리하고 싶었다. 
-(.txt) file에서 Data를 관리할 때 효율적으로 관리하고자 Data 형태를 고민하였으며, 가장 적합해보이는 JSON Data Format으로 관리하게 되었다. 사용자가 등록한 게시글의 Data는 직렬화(serialize 영어로적을지 한글로 할지 택1)하여 File에 저장되도록 하였으며, List를 불러올 땐 직렬화된 데이터를 Parsing하여 HashMap 자료구조에 담아 출력하도록 구현하였다. 
+### Java_App_Board_JDBC_Mysql_v3
+
+1. 공통적으로 사용하는 메소드 뿐만 아니라 변수들도 중복을 없애고 직관성과 유지보수의 용이성을 높이기 위해 Common Class를 생성하게 되었다. 값이 재할당 되는 것은 변수로, 값이 불변한 것은 상수로 선언 하였고, 중복되는 변수와 상수, 로직들을 정리하니
+전체적인 코드가 깔끔하고 직관적으로 보이게 되었다. 
+
+2. Mysql connector Library를 추가하고 Connection하기까지 크게 어려움은 없었다. DB에서 Query가 실행되고 나서 사용자가 원하는 서비스가 정상적으로 실행 됐는지에 대한 Message를 던져주고 싶었다. 
+DBmysql Class의 query 실행후 결과 값을 반환하는 executeUpdate(), executeQuery()을 활용하여 service단에서 값을 return 받아 if문을 활용하여 서비스 실행 후 결과를 알려주었다.
+
+ 
 
 
 
