@@ -204,11 +204,9 @@ public class BoardService {
 
 ### Java_App_Board_JDBC_Mysql_v3
 
-1. 공통적으로 사용하는 메소드 뿐만 아니라 변수들도 중복을 없애고 직관성과 유지보수의 용이성을 높이기 위해 Common Class를 생성하게 되었다. 값이 재할당 되는 것은 변수로, 값이 불변한 것은 상수로 선언 하였고, 중복되는 변수와 상수, 로직들을 정리하니
-전체적인 코드가 깔끔하고 직관적으로 보이게 되었다. 
+1. 유지보수의 용이성을 높이기 위해 공통적으로 사용하는 메소드 및 변수들을 Common Class에 구현하게 되었으며, 이로인해 전체적인 코드가 깔끔하고 직관적으로 보이게 되었다.
 
-2. Mysql connector Library를 추가하고 Connection하기까지 크게 어려움은 없었다. DB에서 Query가 실행되고 나서 사용자가 원하는 서비스가 정상적으로 실행 됐는지에 대한 Message를 던져주고 싶었다. 
-DBmysql Class의 query 실행후 결과 값을 반환하는 executeUpdate(), executeQuery()을 활용하여 service단에서 값을 return 받아 if문을 활용하여 서비스 실행 후 결과를 알려주었다.
+2. Mysql connector Library를 추가하고 Connection하기까지 크게 어려움은 없었다. DB에서 Query가 실행되고 나서 사용자가 원하는 서비스가 정상적으로 실행 됐는지에 대한 Message를 던져주고 싶었다. DBmysql Class에서 Query 실행 후 결과 값을 반환하기 위해 executeUpdate(), executeQuery()을 활용하여 서비스 실행 후 결과를 알려주었다.
 
  
 
