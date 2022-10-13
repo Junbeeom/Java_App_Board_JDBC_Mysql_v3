@@ -204,9 +204,9 @@ public class BoardService {
 
 ### Java_App_Board_JDBC_Mysql_v3
 
-1. 유지보수의 용이성을 높이기 위해 공통적으로 사용하는 메소드 및 변수들을 Common Class에 구현하게 되었으며, 이로인해 전체적인 코드가 깔끔하고 직관적으로 보이게 되었다.
+1. 유지보수의 용이성을 높이기 위해 공통적으로 사용하는 메소드 및 변수들을 Common Class에 구현하게 되었으며, 이로인해 전체적인 코드가 깔끔하고 직관적으로 보이게 되었습니다.
 
-2. Mysql connector Library를 추가하고 Connection하기까지 크게 어려움은 없었다. DB에서 Query가 실행되고 나서 사용자가 원하는 서비스가 정상적으로 실행 됐는지에 대한 Message를 던져주고 싶었다. DBmysql Class에서 Query 실행 후 결과 값을 반환하기 위해 executeUpdate(), executeQuery()을 활용하여 서비스 실행 후 결과를 알려주었다.
+2. Mysql connector Library를 추가하고 Connection하기까지 크게 어려움은 없었습니다. DB에서 Query가 실행되고 나서 사용자가 원하는 서비스가 정상적으로 실행 됐는지에 대한 Message를 던져주고 싶었습니다. DBmysql Class에서 Query 실행 후 결과 값을 반환하기 위해 executeUpdate(), executeQuery()을 활용하여 서비스 실행 후 결과를 알려주도록 구현했습니다.
 
  
 
